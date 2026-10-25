@@ -1,0 +1,43 @@
+digraph ACT {
+  graph [rankdir=TB, nodesep=0.5, ranksep=0.42, fontname="Carlito", pad=0.2, bgcolor="white", label=""];
+  node  [fontname="Carlito", fontsize=13, color="#33415C"];
+  edge  [fontname="Carlito", fontsize=12, color="#33415C"];
+
+  start [shape=circle, style=filled, fillcolor="#33415C", label="", width=0.25];
+  stop  [shape=doublecircle, style=filled, fillcolor="#33415C", label="", width=0.22];
+
+  enter [shape=box, style="rounded,filled", fillcolor="#CDEFE6", label="Customer types an amount\nand presses Confirm"];
+  parse [shape=box, style="rounded,filled", fillcolor="#D6E4F7", label="InputValidator.parseAmount(text)"];
+  d1 [shape=diamond, style=filled, fillcolor="#FFF6D6", label="Valid\npositive amount?", width=2.1, height=1.0];
+  d2 [shape=diamond, style=filled, fillcolor="#FFF6D6", label="Whole notes\n(multiple of R10)?", width=2.1, height=1.0];
+  d3 [shape=diamond, style=filled, fillcolor="#FFF6D6", label="Amount greater\nthan balance?", width=2.1, height=1.0];
+  d4 [shape=diamond, style=filled, fillcolor="#FFF6D6", label="Amount greater than\nremaining daily limit?", width=2.4, height=1.0];
+  atm  [shape=box, style="rounded,filled", fillcolor="#D6E4F7", label="ATM.withdraw(amount)"];
+  acc  [shape=box, style="rounded,filled", fillcolor="#FBE8C4", label="Account.withdraw(amount)\nsubtract and record transaction"];
+  ok   [shape=box, style="rounded,filled", fillcolor="#CDEFE6", label="Show green message:\nsuccess and new balance"];
+
+  e1 [shape=box, style="rounded,filled", fillcolor="#F8D3D3", label="Red message from\nInvalidAmountException"];
+  e2 [shape=box, style="rounded,filled", fillcolor="#F8D3D3", label="Red message:\nenter a multiple of R10"];
+  e3 [shape=box, style="rounded,filled", fillcolor="#F8D3D3", label="Red message: insufficient\nfunds, shows balance"];
+  e4 [shape=box, style="rounded,filled", fillcolor="#F8D3D3", label="Red message:\ndaily limit would be passed"];
+  refresh [shape=box, style="rounded,filled", fillcolor="#E8E0F3", label="finally: refresh the\n\"available today\" label"];
+
+  start -> enter -> parse -> d1;
+  d1 -> atm [label=" yes"];
+  d1 -> e1 [label=" no"];
+  atm -> d2;
+  d2 -> d3 [label=" yes"];
+  d2 -> e2 [label=" no"];
+  d3 -> d4 [label=" no"];
+  d3 -> e3 [label=" yes"];
+  d4 -> acc [label=" no"];
+  d4 -> e4 [label=" yes"];
+  acc -> ok -> refresh;
+  e1 -> refresh; e2 -> refresh; e3 -> refresh; e4 -> refresh;
+  refresh -> stop;
+
+  { rank=same; d1; e1; }
+  { rank=same; d2; e2; }
+  { rank=same; d3; e3; }
+  { rank=same; d4; e4; }
+}

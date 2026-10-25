@@ -1,0 +1,50 @@
+
+== Login screen ==
+  [PASS] empty fields ask for both details
+  [PASS] letters in the account number are refused
+  [PASS] a 2-digit PIN is refused
+  [PASS] wrong PIN shows 2 attempts remaining
+  [PASS] the wrong PIN field was cleared for safety
+  [PASS] second wrong PIN shows 1 attempt remaining
+  [PASS] the ATM has not logged anyone in
+  [PASS] correct details open the main menu
+  [PASS] the ATM session is open
+
+== Main menu ==
+  [PASS] all four options are on screen
+  [PASS] answering No keeps the session open
+
+== Withdraw screen ==
+  [PASS] withdraw screen opens
+  [PASS] R155 is refused (notes only)
+  [PASS] letters are refused
+  [PASS] a negative amount is refused
+  [PASS] zero is refused
+  [PASS] more than the balance gives insufficient funds and shows the balance
+  [PASS] more than the daily limit is refused
+  [PASS] refused withdrawals change nothing
+  [PASS] a quick-amount button fills the field
+  [PASS] R500 is withdrawn, new balance R9 500.00
+  [PASS] the amount field is cleared after success
+  [PASS] Back returns to the main menu
+
+== Deposit screen ==
+  [PASS] deposit screen opens
+  [PASS] 'R 1 250.75' is accepted, new balance R10 750.75
+  [PASS] three decimals are refused
+  [PASS] Back returns to the main menu
+
+== Balance screen ==
+  [PASS] balance screen opens
+  [PASS] the balance on screen is correct
+  [PASS] deposits and withdrawals are listed
+  [PASS] Back returns to the main menu
+
+== Inactivity sign-out (2 second test timer) ==
+  [PASS] the idle customer was logged out
+  [PASS] the login screen is back
+  [PASS] only one screen is open
+
+== Card blocked after three wrong PINs (program exits) ==
+
+RESULT: 34 passed, 0 failed, 34 checks in total

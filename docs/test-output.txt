@@ -1,0 +1,123 @@
+
+== Account (data model) ==
+  [PASS] constructor stores account number
+  [PASS] constructor stores opening balance
+  [PASS] correct PIN accepted
+  [PASS] wrong PIN rejected
+  [PASS] null PIN rejected
+  [PASS] PIN is not stored as plain text
+  [PASS] deposit adds to balance
+  [PASS] cents never drift (0.10 + 0.20 = 0.30)
+  [PASS] withdraw subtracts from balance
+  [PASS] withdrawing the whole balance leaves zero
+  [PASS] overdraft is refused
+  [PASS] exception reports available balance
+  [PASS] exception reports requested amount
+  [PASS] balance unchanged after refused withdrawal
+  [PASS] deposit of zero is rejected
+  [PASS] deposit of negative is rejected
+  [PASS] deposit of NaN is rejected
+  [PASS] withdraw of negative is rejected
+  [PASS] constructor rejects letters in PIN
+  [PASS] constructor rejects 3-digit PIN
+  [PASS] constructor rejects negative balance
+  [PASS] constructor rejects blank account number
+  [PASS] history keeps two entries in order
+  [PASS] history records balance after each entry
+  [PASS] history snapshot cannot be edited
+  [PASS] withdrawn today is counted
+  [PASS] withdrawn on another day is zero
+
+== Transaction ==
+  [PASS] stores type, amount and balance
+  [PASS] stores the given timestamp
+  [PASS] type labels are readable
+
+== InputValidator (input validation) ==
+  [PASS] accepts 500
+  [PASS] accepts decimals 99.95
+  [PASS] accepts surrounding spaces
+  [PASS] accepts 'R 1 500.50' (rand sign and spaces)
+  [PASS] rejects ""
+  [PASS] rejects "   "
+  [PASS] rejects "abc"
+  [PASS] rejects "12abc"
+  [PASS] rejects "-50"
+  [PASS] rejects "0"
+  [PASS] rejects "0.00"
+  [PASS] rejects "10.555"
+  [PASS] rejects "1e3"
+  [PASS] rejects "NaN"
+  [PASS] rejects "Infinity"
+  [PASS] rejects "1,000"
+  [PASS] rejects "50.5.5"
+  [PASS] rejects "1234567890"
+  [PASS] rejects "R"
+  [PASS] rejects "--5"
+  [PASS] rejects "5-"
+  [PASS] rejects null
+  [PASS] PIN 1234 is valid
+  [PASS] PIN 123 is too short
+  [PASS] PIN 12345 is too long
+  [PASS] PIN 12a4 has a letter
+  [PASS] PIN null is invalid
+  [PASS] non-ASCII digits are not a valid PIN
+  [PASS] account 1001 is valid
+  [PASS] account 10 is too short
+  [PASS] account ab12 is invalid
+
+== InputValidator (error messages) ==
+  [PASS] empty input asks for an amount
+  [PASS] negative input says negative
+  [PASS] zero input says greater than zero
+  [PASS] 3 decimals mentions decimal places
+  [PASS] huge input says too large
+  [PASS] letters say digits only
+
+== ATM (login and lockout) ==
+  [PASS] nobody is logged in at start
+  [PASS] correct login succeeds
+  [PASS] logged in after success
+  [PASS] demo balance is R10 000.00
+  [PASS] logout clears the session
+  [PASS] wrong PIN fails
+  [PASS] one attempt used, two remain
+  [PASS] unknown account fails
+  [PASS] failure count includes unknown accounts
+  [PASS] success resets the counter
+  [PASS] card is not blocked after two failures
+  [PASS] card is blocked after three failures
+  [PASS] blocked card refuses the correct PIN
+  [PASS] remaining attempts never negative
+
+== ATM (transactions) ==
+  [PASS] withdraw R500 leaves R9 500.00
+  [PASS] deposit R1 250.75 gives R10 750.75
+  [PASS] withdrawing more than the balance is refused
+  [PASS] refusal reports the balance
+  [PASS] balance unchanged after refusal
+  [PASS] mini statement returns the requested count
+  [PASS] mini statement is newest first
+  [PASS] mini statement never exceeds the history
+  [PASS] balance needs a login
+  [PASS] deposit needs a login
+  [PASS] withdraw needs a login
+
+== ATM (cash rules) ==
+  [PASS] R155 is refused (not whole notes)
+  [PASS] R10.50 is refused (not whole notes)
+  [PASS] refused withdrawals change nothing
+  [PASS] full daily limit available at start
+  [PASS] R5 010 is refused (over daily limit)
+  [PASS] remaining limit drops to R2 000.00
+  [PASS] R2 500 is refused after R3 000 (over limit)
+  [PASS] limit can be used up exactly
+  [PASS] any further withdrawal is refused
+  [PASS] deposits are not limited
+  [PASS] insufficient funds is reported before the daily limit
+
+== End to end (scenario from the project brief) ==
+  [PASS] login, deposit R2 000, withdraw R500
+  [PASS] session closed at the end
+
+RESULT: 105 passed, 0 failed, 105 checks in total

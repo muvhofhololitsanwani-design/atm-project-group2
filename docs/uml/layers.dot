@@ -1,0 +1,19 @@
+digraph L {
+  graph [rankdir=LR, nodesep=0.35, ranksep=0.7, fontname="Carlito", pad=0.15, bgcolor="white"];
+  node  [fontname="Carlito", fontsize=13, shape=box, style="rounded,filled", color="#33415C", margin="0.18,0.12"];
+  edge  [fontname="Carlito", fontsize=11, color="#33415C"];
+
+  ui  [fillcolor="#CDEFE6", label=<<B>Screens (JFrame)</B><BR/>what the customer sees<BR/><FONT POINT-SIZE="11">LoginFrame, MainMenuFrame,<BR/>WithdrawFrame, DepositFrame,<BR/>BalanceFrame + UIStyle</FONT>>];
+  atm [fillcolor="#D6E4F7", label=<<B>ATM (controller)</B><BR/>the rules<BR/><FONT POINT-SIZE="11">login, 3-attempt lockout,<BR/>whole notes, daily limit</FONT>>];
+  acc [fillcolor="#FBE8C4", label=<<B>Account (data)</B><BR/>the money<BR/><FONT POINT-SIZE="11">salted PIN hash, balance,<BR/>transaction history</FONT>>];
+  help [fillcolor="#E8E0F3", label=<<B>Shared helpers</B><BR/><FONT POINT-SIZE="11">InputValidator, AppConstants,<BR/>InvalidAmountException,<BR/>InsufficientFundsException</FONT>>];
+  app [fillcolor="#E6E6E6", label=<<B>Start-up</B><BR/><FONT POINT-SIZE="11">ATMApp, SessionMonitor</FONT>>];
+
+  app -> ui [label=" opens"];
+  ui -> atm [label=" calls"];
+  atm -> acc [label=" delegates"];
+  help -> ui [style=dashed, constraint=false];
+  help -> atm [style=dashed, constraint=false];
+  help -> acc [style=dashed, constraint=false];
+  { rank=same; ui; help; }
+}
