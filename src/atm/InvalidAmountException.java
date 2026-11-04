@@ -1,6 +1,7 @@
  /*  Author      : Ndzalama Mthombeni
  *  Student No. : 260749273
  */
+
 package atm;
 
 public class InvalidAmountException extends Exception {
