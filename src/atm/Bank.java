@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 /* Student Number;260763314
  * Written by; Kgonyane Makgoale
  */
@@ -68,7 +68,7 @@ public class Bank {
     public int getAccountCount() {
         return accounts.size();
     }
-=======
+
 /* Student Number;260763314
  * Written by; Kgonyane Makgoale
  */
@@ -138,5 +138,5 @@ public class Bank {
     public int getAccountCount() {
         return accounts.size();
     }
->>>>>>> be5143077af426199e880739085bd0e3ef5064a4
+
 }
