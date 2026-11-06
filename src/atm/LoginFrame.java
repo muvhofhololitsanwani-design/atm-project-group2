@@ -1,172 +1,201 @@
-/*
- * File:        LoginFrame.java
- * Author:      Muvhofhololi Tsanwani
- * Role:        Member 4, Team leader and Login screen
- * Group:       Group 2, SDN150S (Software Design 1), CPUT
- * Description: First screen the customer sees. Collects the account number
- *              and PIN, checks them with the ATM and opens the main menu.
- *              After too many wrong attempts the card is blocked and the
- *              program closes.
- */
+// Author: Mabandla Nkosi
+// Student number: 260407763
+ 
 package atm;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Point;
-import javax.swing.Box;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.Timer;
+import javax.swing.SwingConstants;
 
-public class LoginFrame extends JFrame {
+public class LoginFrame extends JFrame implements ActionListener {
 
-    private static final long serialVersionUID = 1L;
+    private final Bank bank;              
+    private JTextField accountField;      
+    private JPasswordField pinField;      
+    private JButton loginButton;          
+    private JButton clearButton;          
+    private JButton exitButton;           
+    private JLabel messageLabel;          
 
-    // ------------------------------------------------------------------
-    // Fields (private: only this screen touches its own components)
-    // ------------------------------------------------------------------
-    private final ATM atm;                 // the one shared ATM object
-    private JTextField txtAccNo;           // account number input
-    private JPasswordField pfPin;          // PIN input (hidden characters)
-    private JCheckBox chkShowPin;          // reveals the PIN while ticked
-    private JButton btnLogin;
-    private JLabel lblMessage;             // error feedback
-    private char defaultEcho;              // the dot character used to hide the PIN
-
-    /** Builds and shows the login screen. */
-    public LoginFrame(ATM atm) {
-        this.atm = atm;
-
-        UIStyle.styleFrame(this, "Login");
-
-        // Screen = header on top, form in the middle, button and messages below
-        JPanel pnlMain = UIStyle.createScreenPanel();
-        pnlMain.add(UIStyle.createHeader("Welcome", "Enter your account number and PIN"),
-                BorderLayout.NORTH);
-        pnlMain.add(buildForm(), BorderLayout.CENTER);
-        pnlMain.add(buildFooter(), BorderLayout.SOUTH);
-        add(pnlMain);
-
-        wireEvents();
-
-        // Pressing Enter anywhere on the screen presses Login
-        getRootPane().setDefaultButton(btnLogin);
-
-        setVisible(true);
-        txtAccNo.requestFocusInWindow();
+    public LoginFrame(Bank bank) {
+        this.bank = bank;
+        initComponents();             
     }
 
-    // ------------------------------------------------------------------
-    // Layout
-    // ------------------------------------------------------------------
+    private void initComponents() {
+        setTitle("CPUT Smart ATM - Login");
+        setSize(520, 600);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        getContentPane().setBackground(ATMStyle.LIGHT);
 
-    /** The card holding the two input fields. */
+        add(ATMStyle.createHeader("Welcome - Please Log In"), BorderLayout.NORTH);
+        add(buildForm(), BorderLayout.CENTER);
+        
+        // Quick demo hint displayed at the bottom for testing and grading purposes
+        JLabel hintLabel = new JLabel("Demo card: 1234567890   |   PIN: 1234", SwingConstants.CENTER);
+        hintLabel.setFont(ATMStyle.SMALL_FONT);
+        hintLabel.setForeground(ATMStyle.GREY);
+        hintLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 14, 0));
+        add(hintLabel, BorderLayout.SOUTH);
+
+        getRootPane().setDefaultButton(loginButton);   // Pressing Enter triggers the login button
+        ATMStyle.centreOnScreen(this);
+    }
+
     private JPanel buildForm() {
-        txtAccNo = UIStyle.createTextField();
-        pfPin = UIStyle.createPasswordField();
-        defaultEcho = pfPin.getEchoChar();
-        chkShowPin = UIStyle.createCheckBox("Show PIN");
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setBackground(ATMStyle.LIGHT);
+        form.setBorder(BorderFactory.createEmptyBorder(30, 50, 10, 50));
 
-        JPanel card = UIStyle.createCardPanel();
-        card.add(UIStyle.createLabel("Account number"));
-        card.add(Box.createRigidArea(new Dimension(0, 6)));
-        card.add(txtAccNo);
-        card.add(Box.createRigidArea(new Dimension(0, 16)));
-        card.add(UIStyle.createLabel("PIN"));
-        card.add(Box.createRigidArea(new Dimension(0, 6)));
-        card.add(pfPin);
-        card.add(Box.createRigidArea(new Dimension(0, 10)));
-        card.add(chkShowPin);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(6, 0, 6, 0);
 
-        // The card sits at the top of the centre area instead of stretching
-        JPanel holder = UIStyle.createColumn();
-        holder.add(card);
-        return holder;
+        // Account number field label and text input
+        gbc.gridy = 0;
+        form.add(ATMStyle.createLabel("Account number (10 digits)", ATMStyle.TEXT_FONT, ATMStyle.NAVY), gbc);
+
+        accountField = new JTextField();
+        accountField.setFont(ATMStyle.TEXT_FONT);
+        accountField.setPreferredSize(new Dimension(300, 42));
+        gbc.gridy = 1;
+        form.add(accountField, gbc);
+
+        // PIN field label and password input
+        gbc.gridy = 2;
+        gbc.insets = new Insets(18, 0, 6, 0);
+        form.add(ATMStyle.createLabel("PIN (4 digits)", ATMStyle.TEXT_FONT, ATMStyle.NAVY), gbc);
+
+        pinField = new JPasswordField();
+        pinField.setFont(ATMStyle.TEXT_FONT);
+        pinField.setPreferredSize(new Dimension(300, 42));
+        gbc.gridy = 3;
+        gbc.insets = new Insets(6, 0, 6, 0);
+        form.add(pinField, gbc);
+
+        // Error or status message label
+        messageLabel = ATMStyle.createLabel(" ", ATMStyle.SMALL_FONT, ATMStyle.RED);
+        gbc.gridy = 4;
+        gbc.insets = new Insets(12, 0, 12, 0);
+        form.add(messageLabel, gbc);
+
+        // Action buttons layout
+        loginButton = ATMStyle.createButton("Login", ATMStyle.GREEN);
+        clearButton = ATMStyle.createButton("Clear", ATMStyle.GREY);
+        exitButton  = ATMStyle.createButton("Exit", ATMStyle.RED);
+        loginButton.addActionListener(this);
+        clearButton.addActionListener(this);
+        exitButton.addActionListener(this);
+
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 3, 12, 0));
+        buttonPanel.setBackground(ATMStyle.LIGHT);
+        buttonPanel.add(loginButton);
+        buttonPanel.add(clearButton);
+        buttonPanel.add(exitButton);
+        gbc.gridy = 5;
+        gbc.insets = new Insets(10, 0, 0, 0);
+        form.add(buttonPanel, gbc);
+
+        // Vertical glue constraint to push form components toward the top
+        gbc.gridy = 6;
+        gbc.weighty = 1.0;
+        form.add(new JLabel(), gbc);
+
+        return form;
     }
 
-    /** Message line, Login button and the demo hint. */
-    private JPanel buildFooter() {
-        lblMessage = UIStyle.createMessageLabel();
-        btnLogin = UIStyle.createButton("Log in");
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();          
 
-        JPanel footer = UIStyle.createColumn();
-        footer.add(lblMessage);
-        footer.add(Box.createRigidArea(new Dimension(0, 6)));
-        footer.add(btnLogin);
-        footer.add(Box.createRigidArea(new Dimension(0, 14)));
-        footer.add(UIStyle.createHintLabel("Demo account: 1001  |  PIN: 1234"));
-        return footer;
-    }
-
-    private void wireEvents() {
-        btnLogin.addActionListener(e -> handleLogin());
-
-        // Toggle between dots and visible digits
-        chkShowPin.addActionListener(e ->
-                pfPin.setEchoChar(chkShowPin.isSelected() ? (char) 0 : defaultEcho));
-    }
-
-    // ------------------------------------------------------------------
-    // Button logic
-    // ------------------------------------------------------------------
-
-    /** Runs when the customer presses Log in (or Enter). */
-    private void handleLogin() {
-        String accNo = txtAccNo.getText().trim();
-        String pin = new String(pfPin.getPassword());
-
-        // 1. Cheap checks first: nothing is sent to the ATM until the input looks sane
-        if (accNo.isEmpty() || pin.isEmpty()) {
-            UIStyle.showError(lblMessage, "Please enter your account number and PIN.");
-        } else if (!InputValidator.isValidAccountNumber(accNo)) {
-            UIStyle.showError(lblMessage, "Account numbers contain digits only.");
-        } else if (!InputValidator.isValidPin(pin)) {
-            UIStyle.showError(lblMessage,
-                    "Your PIN must be exactly " + AppConstants.PIN_LENGTH + " digits.");
-        } else if (atm.authenticate(accNo, pin)) {
-            // 2. Success: replace this screen with the main menu
-            dispose();
-            new MainMenuFrame(atm);
-        } else if (atm.isLocked()) {
-            // 3. Too many wrong attempts: block the card and close the program
-            JOptionPane.showMessageDialog(this,
-                    "Your card has been blocked after " + AppConstants.MAX_PIN_ATTEMPTS
-                            + " incorrect attempts.\nPlease contact your bank.",
-                    "Card blocked", JOptionPane.ERROR_MESSAGE);
+        if (source == loginButton) {
+            handleLogin();
+        } else if (source == clearButton) {
+            clearFields();
+        } else if (source == exitButton) {
             System.exit(0);
-        } else {
-            // 4. Wrong details: tell the customer how many tries are left
-            int left = atm.getRemainingAttempts();
-            UIStyle.showError(lblMessage, "Incorrect details. " + left
-                    + (left == 1 ? " attempt" : " attempts") + " remaining.");
-            pfPin.setText("");
-            pfPin.requestFocusInWindow();
-            shakeWindow();
         }
     }
 
-    /** A quick left-right wobble, like a bank app saying "no". */
-    private void shakeWindow() {
-        final Point origin = getLocation();
-        final int[] offsets = {-10, 10, -8, 8, -5, 5, -2, 2, 0};
-        final int[] step = {0};
+    // Validates inputs and handles authentication through the Bank model
+    private void handleLogin() {
+        String accountNumber = accountField.getText().trim();
+        String pin = new String(pinField.getPassword());
 
-        Timer timer = new Timer(25, null);
-        timer.addActionListener(e -> {
-            if (step[0] < offsets.length) {
-                setLocation(origin.x + offsets[step[0]], origin.y);
-                step[0]++;
-            } else {
-                setLocation(origin);
-                timer.stop();
+        // Basic format and presence validation
+        if (accountNumber.isEmpty() || pin.isEmpty()) {
+            showMessage("Please enter your account number and PIN.");
+            return;
+        }
+        if (!ATMStyle.isDigitsOnly(accountNumber) || accountNumber.length() != 10) {
+            showMessage("The account number must be exactly 10 digits.");
+            return;
+        }
+        if (!ATMStyle.isDigitsOnly(pin) || pin.length() != 4) {
+            showMessage("The PIN must be exactly 4 digits.");
+            return;
+        }
+
+        // Authenticate credentials against the bank registry
+        int result = bank.authenticate(accountNumber, pin);
+
+        switch (result) {
+            case Bank.AUTH_SUCCESS: {
+                Account account = bank.findAccount(accountNumber);
+                MainMenuFrame menu = new MainMenuFrame(account);   // Open main menu screen
+                menu.setVisible(true);
+                dispose();                                         // Close login window
+                break;
             }
-        });
-        timer.start();
+            case Bank.AUTH_NO_ACCOUNT:
+                showMessage("Account not found. Please check the number.");
+                break;
+            case Bank.AUTH_WRONG_PIN: {
+                Account account = bank.findAccount(accountNumber);
+                showMessage("Incorrect PIN. Attempts left: " + account.getRemainingAttempts());
+                pinField.setText("");
+                break;
+            }
+            case Bank.AUTH_LOCKED:
+                pinField.setText("");
+                showMessage("This card is blocked.");
+                ATMStyle.showError(this, "Your card has been blocked after "
+                        + Account.MAX_PIN_ATTEMPTS + " wrong PIN attempts.\n"
+                        + "Please contact your bank.\n"
+                        + "(Demo: restart the program to unblock the card.)");
+                break;
+            default:
+                showMessage("Unknown error. Please try again.");
+                break;
+        }
+    }
+
+    private void clearFields() {
+        accountField.setText("");
+        pinField.setText("");
+        messageLabel.setText(" ");
+        accountField.requestFocus();
+    }
+
+    private void showMessage(String text) {
+        messageLabel.setText(text);
     }
 }
