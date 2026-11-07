@@ -1,0 +1,56 @@
+digraph ATM {
+  rankdir=TB; nodesep=0.35; ranksep=0.7; splines=true; concentrate=false;
+  node [shape=record, fontname="DejaVu Sans", fontsize=10, style=filled, fillcolor="#FFFFFF", color="#0D3B66"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#0D3B66"];
+
+  Main [label="{Main|+ main(args : String[]) : void\l}"];
+
+  JFrame [label="{\<\<javax.swing\>\>\nJFrame}", fillcolor="#E8EEF4", style="filled,dashed"];
+  Exc [label="{\<\<java.lang\>\>\nException}", fillcolor="#E8EEF4", style="filled,dashed"];
+
+  LoginFrame [label="{LoginFrame\n\<\<implements ActionListener\>\>|- bank : Bank\l- accountField : JTextField\l- pinField : JPasswordField\l- loginButton, clearButton, exitButton : JButton\l- messageLabel : JLabel\l|+ LoginFrame(bank : Bank)\l- initComponents() : void\l- buildForm() : JPanel\l+ actionPerformed(e : ActionEvent) : void\l- handleLogin() : void\l- clearFields() : void\l- showMessage(text : String) : void\l}"];
+  MainMenuFrame [label="{MainMenuFrame\n\<\<implements ActionListener\>\>|- account : Account\l- withdrawButton, depositButton : JButton\l- balanceButton, exitButton : JButton\l|+ MainMenuFrame(account : Account)\l- initComponents() : void\l- centredLabel(text, font, colour) : JLabel\l+ actionPerformed(e : ActionEvent) : void\l- openScreen(screen : JFrame) : void\l- confirmExit() : void\l}"];
+  WithdrawFrame [label="{WithdrawFrame\n\<\<implements ActionListener\>\>|- menu : MainMenuFrame\l- account : Account\l- quickAmounts : int[]\l- quickButtons : JButton[]\l- amountField : JTextField\l- withdrawButton, clearButton, backButton : JButton\l- balanceLabel : JLabel\l|+ WithdrawFrame(menu, account)\l- initComponents() : void\l+ actionPerformed(e : ActionEvent) : void\l- processWithdrawal() : void\l- updateBalanceLabel() : void\l- goBack() : void\l}"];
+  DepositFrame [label="{DepositFrame\n\<\<implements ActionListener\>\>|- menu : MainMenuFrame\l- account : Account\l- amountField : JTextField\l- depositButton, clearButton, backButton : JButton\l- balanceLabel : JLabel\l|+ DepositFrame(menu, account)\l- initComponents() : void\l+ actionPerformed(e : ActionEvent) : void\l- processDeposit() : void\l- updateBalanceLabel() : void\l- goBack() : void\l}"];
+  BalanceFrame [label="{BalanceFrame\n\<\<implements ActionListener\>\>|- menu : MainMenuFrame\l- account : Account\l- statementArea : JTextArea\l- backButton : JButton\l|+ BalanceFrame(menu, account)\l- initComponents() : void\l- centredLabel(text, font, colour) : JLabel\l- loadStatement() : void\l+ actionPerformed(e : ActionEvent) : void\l- goBack() : void\l}"];
+
+  ATMStyle [label="{ATMStyle\n\<\<utility class\>\>|+ BANK_NAME : String\l+ NAVY, BLUE, GREEN, RED, GREY, LIGHT, WHITE : Color\l+ TITLE_FONT, HEADING_FONT, TEXT_FONT : Font\l+ BUTTON_FONT, SMALL_FONT, MONEY_FONT : Font\l|- ATMStyle()\l+ formatMoney(amount : double) : String\l+ maskAccountNumber(number : String) : String\l+ createHeader(title : String) : JPanel\l+ createButton(text, colour) : JButton\l+ createLabel(text, font, colour) : JLabel\l+ centreOnScreen(frame : JFrame) : void\l+ isDigitsOnly(text : String) : boolean\l+ isAmountText(text : String) : boolean\l+ showError(parent, message) : void\l+ showInfo(parent, message) : void\l}"];
+
+  Bank [label="{Bank|+ AUTH_SUCCESS : int = 0\l+ AUTH_NO_ACCOUNT : int = 1\l+ AUTH_LOCKED : int = 2\l+ AUTH_WRONG_PIN : int = 3\l- accounts : ArrayList\<Account\>\l|+ Bank()\l- loadDemoAccounts() : void\l+ addAccount(account : Account) : void\l+ findAccount(number : String) : Account\l+ authenticate(number, pin : String) : int\l+ getAccountCount() : int\l}"];
+
+  Account [label="{Account|+ INITIAL_BALANCE : double = 10000.00\l+ MAX_WITHDRAWAL : double = 5000.00\l+ MAX_DEPOSIT : double = 20000.00\l+ NOTE_SIZE : int = 10\l+ MAX_PIN_ATTEMPTS : int = 3\l- accountNumber, holderName, pin : String\l- balanceInCents : long\l- failedAttempts : int\l- locked : boolean\l- transactions : ArrayList\<Transaction\>\l|+ Account(number, name, pin)\l+ Account(number, name, pin, openingBalance)\l+ getAccountNumber() : String\l+ getHolderName() : String\l+ getBalance() : double\l+ isLocked() : boolean\l+ getRemainingAttempts() : int\l+ checkPin(pin : String) : boolean\l+ recordFailedAttempt() : void\l+ resetFailedAttempts() : void\l+ deposit(amount : double) : void\l+ withdraw(amount : double) : void\l+ getLastTransactions(count : int) : ArrayList\<Transaction\>\l- convertToCents(amount : double) : long\l}"];
+
+  Transaction [label="{Transaction|- type : String\l- amount : double\l- balanceAfter : double\l- dateTime : LocalDateTime\l|+ Transaction(type, amount, balanceAfter)\l+ getType() : String\l+ getAmount() : double\l+ getBalanceAfter() : double\l+ getFormattedTime() : String\l+ toString() : String\l}"];
+
+  InvalidAmountException [label="{InvalidAmountException|+ InvalidAmountException(msg : String)\l}"];
+  InsufficientFundsException [label="{InsufficientFundsException|- requested, balance : double\l|+ InsufficientFundsException(requested, balance)\l+ getShortfall() : double\l}"];
+
+  // Inheritance (solid line, hollow triangle)
+  edge [arrowhead=onormal];
+  LoginFrame -> JFrame; MainMenuFrame -> JFrame; WithdrawFrame -> JFrame; DepositFrame -> JFrame; BalanceFrame -> JFrame;
+  InvalidAmountException -> Exc; InsufficientFundsException -> Exc;
+
+
+  // Composition / aggregation
+  edge [style=solid, arrowhead=none, dir=both, arrowtail=diamond];
+  Bank -> Account [arrowtail=odiamond, label="  1 .. *  accounts", headlabel=""];
+  Account -> Transaction [arrowtail=diamond, label="  0 .. *  transactions"];
+
+  // Dependencies (dashed open arrow)
+  edge [style=dashed, arrowhead=vee, dir=forward, arrowtail=none];
+  Main -> LoginFrame [label=" creates"];
+  Main -> Bank [label=" creates"];
+  LoginFrame -> Bank [label=" uses"];
+  LoginFrame -> MainMenuFrame [label=" opens"];
+  MainMenuFrame -> WithdrawFrame [label=" opens"];
+  MainMenuFrame -> DepositFrame [label=" opens"];
+  MainMenuFrame -> BalanceFrame [label=" opens"];
+  WithdrawFrame -> Account [label=" uses"];
+  DepositFrame -> Account [label=" uses"];
+  BalanceFrame -> Account [label=" reads"];
+  WithdrawFrame -> MainMenuFrame [label=" returns to", constraint=false];
+  DepositFrame -> MainMenuFrame [label=" returns to", constraint=false];
+  BalanceFrame -> MainMenuFrame [label=" returns to", constraint=false];
+  Account -> InvalidAmountException [label=" throws"];
+  Account -> InsufficientFundsException [label=" throws"];
+}

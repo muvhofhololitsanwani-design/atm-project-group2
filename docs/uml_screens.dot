@@ -1,0 +1,31 @@
+digraph G {
+  rankdir=TB; nodesep=0.3; ranksep=0.45; splines=true;
+  node [shape=record, fontname="DejaVu Sans", fontsize=10, style=filled, fillcolor="#FFFFFF", color="#0D3B66"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#0D3B66"];
+  Main [label="{Main|+ main(args : String[]) : void\l}"];
+  LoginFrame [label="{LoginFrame\n\<\<implements ActionListener\>\>|- bank : Bank\l|+ LoginFrame(bank : Bank)\l- initComponents() : void\l- buildForm() : JPanel\l+ actionPerformed(e : ActionEvent) : void\l- handleLogin() : void\l- clearFields() : void\l- showMessage(text : String) : void\l}"];
+  MainMenuFrame [label="{MainMenuFrame\n\<\<implements ActionListener\>\>|- account : Account\l|+ MainMenuFrame(account : Account)\l- initComponents() : void\l- centredLabel(text, font, colour) : JLabel\l+ actionPerformed(e : ActionEvent) : void\l- openScreen(screen : JFrame) : void\l- confirmExit() : void\l}"];
+  WithdrawFrame [label="{WithdrawFrame\n\<\<implements ActionListener\>\>|- menu : MainMenuFrame\l- account : Account\l- quickAmounts : int[]\l|+ WithdrawFrame(menu, account)\l- initComponents() : void\l+ actionPerformed(e : ActionEvent) : void\l- processWithdrawal() : void\l- updateBalanceLabel() : void\l- goBack() : void\l}"];
+  DepositFrame [label="{DepositFrame\n\<\<implements ActionListener\>\>|- menu : MainMenuFrame\l- account : Account\l|+ DepositFrame(menu, account)\l- initComponents() : void\l+ actionPerformed(e : ActionEvent) : void\l- processDeposit() : void\l- updateBalanceLabel() : void\l- goBack() : void\l}"];
+  BalanceFrame [label="{BalanceFrame\n\<\<implements ActionListener\>\>|- menu : MainMenuFrame\l- account : Account\l|+ BalanceFrame(menu, account)\l- initComponents() : void\l- centredLabel(text, font, colour) : JLabel\l- loadStatement() : void\l+ actionPerformed(e : ActionEvent) : void\l- goBack() : void\l}"];
+  JFrame [label="{\<\<javax.swing\>\>\nJFrame}", fillcolor="#E8EEF4", style="filled,dashed"];
+  ATMStyle [label="{ATMStyle\n\<\<utility class\>\>|+ BANK_NAME : String\l+ NAVY, BLUE, GREEN, RED, GREY, LIGHT, WHITE : Color\l+ TITLE_FONT, HEADING_FONT, TEXT_FONT : Font\l+ BUTTON_FONT, SMALL_FONT, MONEY_FONT : Font\l|- ATMStyle()\l+ formatMoney(amount : double) : String\l+ maskAccountNumber(number : String) : String\l+ createHeader(title : String) : JPanel\l+ createButton(text, colour) : JButton\l+ createLabel(text, font, colour) : JLabel\l+ centreOnScreen(frame : JFrame) : void\l+ isDigitsOnly(text : String) : boolean\l+ isAmountText(text : String) : boolean\l+ showError(parent, message) : void\l+ showInfo(parent, message) : void\l}"];
+  Bank [label="{Bank}", fillcolor="#F3F6FA"];
+  Account [label="{Account}", fillcolor="#F3F6FA"];
+  edge [arrowhead=onormal];
+  LoginFrame -> JFrame; MainMenuFrame -> JFrame; WithdrawFrame -> JFrame; DepositFrame -> JFrame; BalanceFrame -> JFrame;
+  edge [style=dashed, arrowhead=vee];
+  Main -> LoginFrame [label=" creates"];
+  Main -> Bank [label=" creates"];
+  LoginFrame -> Bank [label=" uses"];
+  LoginFrame -> MainMenuFrame [label=" opens"];
+  MainMenuFrame -> WithdrawFrame [label=" opens"];
+  MainMenuFrame -> DepositFrame [label=" opens"];
+  MainMenuFrame -> BalanceFrame [label=" opens"];
+  WithdrawFrame -> Account [label=" uses"];
+  DepositFrame -> Account [label=" uses"];
+  BalanceFrame -> Account [label=" reads"];
+  WithdrawFrame -> MainMenuFrame [label=" returns to", constraint=false];
+  DepositFrame -> MainMenuFrame [label=" returns to", constraint=false];
+  BalanceFrame -> MainMenuFrame [label=" returns to", constraint=false];
+}

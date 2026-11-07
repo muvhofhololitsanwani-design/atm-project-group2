@@ -1,0 +1,23 @@
+digraph G {
+  rankdir=TB; nodesep=0.3; ranksep=0.5; splines=true;
+  node [shape=record, fontname="DejaVu Sans", fontsize=10, style=filled, fillcolor="#FFFFFF", color="#0D3B66"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#0D3B66"];
+  Bank [label="{Bank|+ AUTH_SUCCESS : int = 0\l+ AUTH_NO_ACCOUNT : int = 1\l+ AUTH_LOCKED : int = 2\l+ AUTH_WRONG_PIN : int = 3\l- accounts : ArrayList\<Account\>\l|+ Bank()\l- loadDemoAccounts() : void\l+ addAccount(account : Account) : void\l+ findAccount(number : String) : Account\l+ authenticate(number, pin : String) : int\l+ getAccountCount() : int\l}"];
+  Account [label="{Account|+ INITIAL_BALANCE : double = 10000.00\l+ MAX_WITHDRAWAL : double = 5000.00\l+ MAX_DEPOSIT : double = 20000.00\l+ NOTE_SIZE : int = 10\l+ MAX_PIN_ATTEMPTS : int = 3\l- accountNumber, holderName, pin : String\l- balanceInCents : long\l- failedAttempts : int\l- locked : boolean\l- transactions : ArrayList\<Transaction\>\l|+ Account(number, name, pin)\l+ Account(number, name, pin, openingBalance)\l+ getAccountNumber() : String\l+ getHolderName() : String\l+ getBalance() : double\l+ isLocked() : boolean\l+ getRemainingAttempts() : int\l+ checkPin(pin : String) : boolean\l+ recordFailedAttempt() : void\l+ resetFailedAttempts() : void\l+ deposit(amount : double) : void\l+ withdraw(amount : double) : void\l+ getLastTransactions(count : int) : ArrayList\<Transaction\>\l- convertToCents(amount : double) : long\l}"];
+  Transaction [label="{Transaction|- type : String\l- amount : double\l- balanceAfter : double\l- dateTime : LocalDateTime\l|+ Transaction(type, amount, balanceAfter)\l+ getType() : String\l+ getAmount() : double\l+ getBalanceAfter() : double\l+ getFormattedTime() : String\l+ toString() : String\l}"];
+  InvalidAmountException [label="{InvalidAmountException|+ InvalidAmountException(msg : String)\l}"];
+  InsufficientFundsException [label="{InsufficientFundsException|- requested, balance : double\l|+ InsufficientFundsException(requested, balance)\l+ getShortfall() : double\l}"];
+  Exc [label="{\<\<java.lang\>\>\nException}", fillcolor="#E8EEF4", style="filled,dashed"];
+  ATMStyle [label="{\<\<utility class\>\>\nATMStyle|+ formatMoney(amount : double) : String\l  ...\l}", fillcolor="#F3F6FA"];
+  { rank=same; Transaction; InvalidAmountException; InsufficientFundsException; ATMStyle; }
+  edge [arrowhead=onormal];
+  InvalidAmountException -> Exc; InsufficientFundsException -> Exc;
+  edge [style=solid, arrowhead=none, dir=both, arrowtail=odiamond];
+  Bank -> Account [label="  1 .. *  accounts"];
+  edge [arrowtail=diamond];
+  Account -> Transaction [label="  0 .. *  transactions"];
+  edge [style=dashed, arrowhead=vee, dir=forward, arrowtail=none];
+  Account -> InvalidAmountException [label=" throws"];
+  Account -> InsufficientFundsException [label=" throws"];
+  Account -> ATMStyle [label=" formats money"];
+}
