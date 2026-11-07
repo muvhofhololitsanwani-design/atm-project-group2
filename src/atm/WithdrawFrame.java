@@ -1,6 +1,6 @@
 /*
  *  Author: Muvhofhololi Tsanwani
- *  Student Number: 261021222
+ *  Student number: 261021222
  */
 
 package atm;
