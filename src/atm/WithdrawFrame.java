@@ -26,15 +26,15 @@ import javax.swing.SwingConstants;
 public class WithdrawFrame extends JFrame implements ActionListener
 {
 
-    private final MainMenuFrame menu;                       // Screen to return to
-    private final Account account;                          // The logged-in customer
-    private final int[] quickAmounts = {100, 200, 500, 1000, 2000, 5000};  // Quick cash preset options
-    private JButton[] quickButtons;                         // Buttons for quick cash amounts
-    private JTextField amountField;                         // Text field for custom withdrawal amounts
+    private final MainMenuFrame menu; // Screen to return to
+    private final Account account; // The logged-in customer
+    private final int[] quickAmounts = {100, 200, 500, 1000, 2000, 5000}; // Quick cash preset options
+    private JButton[] quickButtons; // Buttons for quick cash amounts
+    private JTextField amountField; // Text field for custom withdrawal amounts
     private JButton withdrawButton;
     private JButton clearButton;
     private JButton backButton;
-    private JLabel balanceLabel;                            // Displays the current account balance
+    private JLabel balanceLabel; // Displays the current account balance
 
     public WithdrawFrame(MainMenuFrame menu, Account account) {
         this.menu = menu;
@@ -128,7 +128,7 @@ public class WithdrawFrame extends JFrame implements ActionListener
         form.add(new JLabel(), gbc);
 
         add(form, BorderLayout.CENTER);
-        getRootPane().setDefaultButton(withdrawButton);   // Pressing Enter triggers the withdraw button
+        getRootPane().setDefaultButton(withdrawButton); // Pressing Enter triggers the withdraw button
         ATMStyle.centreOnScreen(this);
     }
 
@@ -167,7 +167,7 @@ public class WithdrawFrame extends JFrame implements ActionListener
 
         try {
             double amount = Double.parseDouble(text);
-            account.withdraw(amount);                 // Enforces transaction limits, note multiples, and funds
+            account.withdraw(amount); // Enforces transaction limits, note multiples, and funds
 
             updateBalanceLabel();
             amountField.setText("");
