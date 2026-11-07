@@ -1,6 +1,6 @@
 /*
- *  Author      : Siyolise Mhlauli
- *  Student No. : 261295438
+ *  Author         : Siyolise Mhlauli
+ *  Student Number : 261295438
  */
 package atm;
 
